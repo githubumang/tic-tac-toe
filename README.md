@@ -1,4 +1,4 @@
-This is the Tic-Tac-Toe game which is making during learning React from react.dev
+This is the Tic-Tac-Toe game which is making during learning React.JS from react.dev
 
 In this game we will get the status of Winner/Tie/Turn.
 
