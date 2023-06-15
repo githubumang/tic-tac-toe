@@ -6,18 +6,16 @@ function Square({value, onclick}){
   );
 }
 
-export default function App() {
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////// BOARD  //////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+function Board() {
   const [svalue, setsvalue] = useState(true)
   const [squareval, setsquares] = useState(Array(9).fill(null));
 
   function handleclick(i){
-    if(squareval[i]){
+    if(squareval[i] || checkwinner(squareval)){
       console.log(squareval[i])
-      return;
-    }
-
-    if(checkwinner(squareval)){ 
-      alert('Winner is ');
       return;
     }
 
@@ -29,8 +27,23 @@ export default function App() {
     setsvalue(!svalue)
   }
 
+  let status;                                                   // See the status: Winner, Tie or Turn
+  let winner = checkwinner(squareval);
+  if(winner === "tie"){
+    status = "Game is tie";
+  }
+  else if(winner){
+    status = "Winner: "+winner;
+  }
+  else{
+    if(svalue)
+      status = "Turn: X";
+    else status = "Turn: O";
+  }
+
   function checkwinner(squares){
-    const lines=[
+    // Taking all the condition of winner
+    const lines=[                                       
       [0,1,2],
       [3,4,5],
       [6,7,8],
@@ -43,16 +56,24 @@ export default function App() {
 
     for(let i=0; i<lines.length; i++){
       const [a,b,c] = lines[i];
-      if(squares[a] && squares[a]===squares[b] && squares[a]===squares[c]){
+      
+      //All the conditions are checked here 
+      if(squares[a] && squares[a]===squares[b] && squares[a]===squares[c]){         
         return (squares[a]);
       }
     }
-    return null;
+
+    //Checking if any block is blank or not. Checking the tie condition 
+    for(let i=0; i<9; i++){
+      if(!squares[i]) return null;                          
+    }
+    return "tie";
   }
 
-  
   return ( 
     <div>
+      
+      <div className='status'>{status}</div>
       <div className="board-row">  
       {/* Here make the function for onclick because we are calling the handleclick(i) and it will go in infinite loop while
       if we call the function without passing any arguments then this problem will not faced as it does not call the function
@@ -72,6 +93,23 @@ export default function App() {
         <Square value={squareval[6]} onclick={()=>handleclick(6)}/>
         <Square value={squareval[7]} onclick={()=>handleclick(7)}/>
         <Square value={squareval[8]} onclick={()=>handleclick(8)}/>
+      </div>
+    </div>
+  );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////   GAME    /////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+export default function Game(){
+  return(
+    <div className='game'>
+      <div className='game-board'>
+        <Board/>
+      </div>
+      <div className='game-info'>
+        <ol>dd</ol>
       </div>
     </div>
   );
