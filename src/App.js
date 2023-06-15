@@ -9,9 +9,7 @@ function Square({value, onclick}){
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// BOARD  //////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-function Board() {
-  const [svalue, setsvalue] = useState(true)
-  const [squareval, setsquares] = useState(Array(9).fill(null));
+function Board({svalue, squareval, setsquares}) {
 
   function handleclick(i){
     if(squareval[i] || checkwinner(squareval)){
@@ -23,8 +21,6 @@ function Board() {
     if(svalue) nextSquare[i]='X'
     else nextSquare[i]='O'
     setsquares(nextSquare)                                        // Change the old square to new square
-    
-    setsvalue(!svalue)
   }
 
   let status;                                                   // See the status: Winner, Tie or Turn
@@ -103,10 +99,20 @@ function Board() {
 /////////////////////////////////////////   GAME    /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 export default function Game(){
+  const [nextTurn, setNextTurn] = useState(true)
+  const [history, setHistory] = useState([Array(9).fill(null)])
+  const currentSquare = history[history.length-1];
+
+  function handleplay(nextSquare){
+    setHistory([...history, nextSquare])
+    setNextTurn(!nextTurn)
+  }
+
+
   return(
     <div className='game'>
       <div className='game-board'>
-        <Board/>
+        <Board svalue={nextTurn} squareval={currentSquare} setsquares={handleplay} />
       </div>
       <div className='game-info'>
         <ol>dd</ol>
