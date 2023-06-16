@@ -7,24 +7,24 @@ function Square({value, onclick}){
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////// BOARD  //////////////////////////////////////////////////////
+/////////////////////////////////////// Design the BOARD  ///////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 function Board({svalue, squareval, setsquares}) {
 
   function handleclick(i){
-    if(squareval[i] || checkwinner(squareval)){
+    if(checkwinner(squareval) || squareval[i]){
       console.log(squareval[i])
       return;
     }
 
     const nextSquare= squareval.slice()                              //Using immutability.  Making the copy of the array squareval
-    if(svalue) nextSquare[i]='X'
-    else nextSquare[i]='O'
-    setsquares(nextSquare)                                        // Change the old square to new square
+    if(svalue) nextSquare[i]='X';
+    else nextSquare[i]='O';
+    setsquares(nextSquare);                                        // Change the old square to new square
   }
 
   let status;                                                   // See the status: Winner, Tie or Turn
-  let winner = checkwinner(squareval);
+  const winner = checkwinner(squareval);
   if(winner === "tie"){
     status = "Game is tie";
   }
@@ -35,35 +35,6 @@ function Board({svalue, squareval, setsquares}) {
     if(svalue)
       status = "Turn: X";
     else status = "Turn: O";
-  }
-
-  function checkwinner(squares){
-    // Taking all the condition of winner
-    const lines=[                                       
-      [0,1,2],
-      [3,4,5],
-      [6,7,8],
-      [0,3,6],
-      [1,4,7],
-      [2,5,8],
-      [0,4,8],
-      [2,4,6]
-    ]
-
-    for(let i=0; i<lines.length; i++){
-      const [a,b,c] = lines[i];
-      
-      //All the conditions are checked here 
-      if(squares[a] && squares[a]===squares[b] && squares[a]===squares[c]){         
-        return (squares[a]);
-      }
-    }
-
-    //Checking if any block is blank or not. Checking the tie condition 
-    for(let i=0; i<9; i++){
-      if(!squares[i]) return null;                          
-    }
-    return "tie";
   }
 
   return ( 
@@ -99,24 +70,80 @@ function Board({svalue, squareval, setsquares}) {
 /////////////////////////////////////////   GAME    /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 export default function Game(){
-  const [nextTurn, setNextTurn] = useState(true)
-  const [history, setHistory] = useState([Array(9).fill(null)])
-  const currentSquare = history[history.length-1];
+  const [nextTurn, setNextTurn] = useState(true);
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [currentMove, setCurrentMove] = useState(0);
+  const currentSquare = history[currentMove];
 
   function handleplay(nextSquare){
-    setHistory([...history, nextSquare])
+    const thehistory = [...history.slice(0,currentMove+1), nextSquare];
+    setHistory(thehistory);
+    setCurrentMove(thehistory.length-1);
     setNextTurn(!nextTurn)
   }
+
+  function jumpTo(nextMove){
+    setCurrentMove(nextMove);
+    setNextTurn(nextMove%2===0);
+  }
+
+  const moves = history.map((squares,move)=>{
+    
+    let description;
+    if(move>0){
+      description = 'Go to move #'+move;
+    }
+    else{
+      description = 'Go to game start';
+    }
+    return(
+      <li key={move}>
+        <button onClick={()=>jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
 
 
   return(
     <div className='game'>
       <div className='game-board'>
         <Board svalue={nextTurn} squareval={currentSquare} setsquares={handleplay} />
-      </div>
+      </div>  
       <div className='game-info'>
-        <ol>dd</ol>
+        {/* Showing the previous moves */}
+        <ol>{moves}</ol>
       </div>
     </div>
   );
+}
+
+
+
+function checkwinner(squares){
+  // Taking all the condition of winner
+  const lines=[                                       
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+    [0,4,8],
+    [2,4,6]
+  ]
+
+  for(let i=0; i<lines.length; i++){
+    const [a,b,c] = lines[i];
+    
+    //All the conditions are checked here 
+    if(squares[a] && squares[a]===squares[b] && squares[a]===squares[c]){         
+      return squares[a];
+    }
+  }
+
+  //Checking if any block is blank or not. Checking the tie condition 
+  for(let i=0; i<9; i++){
+    if(!squares[i]) return null;                          
+  }
+  return "tie";
 }
