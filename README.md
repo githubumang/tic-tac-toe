@@ -1,4 +1,4 @@
-This is the Tic-Tac-Toe game which is making during learning React.JS from react.dev
+This is the Tic-Tac-Toe game which makes during learning React.JS from react.dev
 
 See the video here: 👇👇👇
 
